@@ -1,12 +1,19 @@
-﻿using System;
+﻿using Autofac;
+using MovieTimes.Scraper.TypeRegistration;
+using System.Threading.Tasks;
 
 namespace MovieTimes.Scraper
 {
     class Program
     {
-        static void Main(string[] args)
+        async static Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var container = ContainerConfig.Configure();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var movieTimesCollector = scope.Resolve<MovieTimeCollector>();
+                await movieTimesCollector.CollectMovieTimes();
+            }
         }
     }
 }

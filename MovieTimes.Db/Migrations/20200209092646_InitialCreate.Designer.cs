@@ -10,7 +10,7 @@ using MovieTimes.Db;
 namespace MovieTimes.Db.Migrations
 {
     [DbContext(typeof(MovieTimesContext))]
-    [Migration("20200207214125_InitialCreate")]
+    [Migration("20200209092646_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,24 @@ namespace MovieTimes.Db.Migrations
                 .HasAnnotation("ProductVersion", "3.1.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("MovieTimes.Db.Entities.Cinema", b =>
+                {
+                    b.Property<int>("CinemaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CinemaName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("City")
+                        .HasColumnType("int");
+
+                    b.HasKey("CinemaId");
+
+                    b.ToTable("Cinemas");
+                });
 
             modelBuilder.Entity("MovieTimes.Db.Entities.Movie", b =>
                 {
@@ -49,10 +67,10 @@ namespace MovieTimes.Db.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("MovieId")
+                    b.Property<int>("CinemaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MovieTheaterId")
+                    b.Property<int>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
@@ -60,39 +78,24 @@ namespace MovieTimes.Db.Migrations
 
                     b.HasKey("MovieShowingId");
 
-                    b.HasIndex("MovieId");
+                    b.HasIndex("CinemaId");
 
-                    b.HasIndex("MovieTheaterId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("MovieShowings");
                 });
 
-            modelBuilder.Entity("MovieTimes.Db.Entities.MovieTheater", b =>
-                {
-                    b.Property<int>("MovieTheaterId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("MovieTheaterName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MovieTheaterId");
-
-                    b.ToTable("MovieTheaters");
-                });
-
             modelBuilder.Entity("MovieTimes.Db.Entities.MovieShowing", b =>
                 {
-                    b.HasOne("MovieTimes.Db.Entities.Movie", "Movie")
-                        .WithMany("MovieShowings")
-                        .HasForeignKey("MovieId")
+                    b.HasOne("MovieTimes.Db.Entities.Cinema", "Cinema")
+                        .WithMany()
+                        .HasForeignKey("CinemaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieTimes.Db.Entities.MovieTheater", "MovieTheater")
-                        .WithMany()
-                        .HasForeignKey("MovieTheaterId")
+                    b.HasOne("MovieTimes.Db.Entities.Movie", "Movie")
+                        .WithMany("MovieShowings")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

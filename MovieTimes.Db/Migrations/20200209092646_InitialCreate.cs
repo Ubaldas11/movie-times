@@ -8,6 +8,20 @@ namespace MovieTimes.Db.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Cinemas",
+                columns: table => new
+                {
+                    CinemaId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CinemaName = table.Column<string>(nullable: true),
+                    City = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cinemas", x => x.CinemaId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Movies",
                 columns: table => new
                 {
@@ -23,19 +37,6 @@ namespace MovieTimes.Db.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieTheaters",
-                columns: table => new
-                {
-                    MovieTheaterId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MovieTheaterName = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MovieTheaters", x => x.MovieTheaterId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MovieShowings",
                 columns: table => new
                 {
@@ -43,34 +44,34 @@ namespace MovieTimes.Db.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartTime = table.Column<DateTime>(nullable: false),
                     MovieId = table.Column<int>(nullable: false),
-                    MovieTheaterId = table.Column<int>(nullable: false)
+                    CinemaId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MovieShowings", x => x.MovieShowingId);
+                    table.ForeignKey(
+                        name: "FK_MovieShowings_Cinemas_CinemaId",
+                        column: x => x.CinemaId,
+                        principalTable: "Cinemas",
+                        principalColumn: "CinemaId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MovieShowings_Movies_MovieId",
                         column: x => x.MovieId,
                         principalTable: "Movies",
                         principalColumn: "MovieId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MovieShowings_MovieTheaters_MovieTheaterId",
-                        column: x => x.MovieTheaterId,
-                        principalTable: "MovieTheaters",
-                        principalColumn: "MovieTheaterId",
-                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovieShowings_CinemaId",
+                table: "MovieShowings",
+                column: "CinemaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovieShowings_MovieId",
                 table: "MovieShowings",
                 column: "MovieId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MovieShowings_MovieTheaterId",
-                table: "MovieShowings",
-                column: "MovieTheaterId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -79,10 +80,10 @@ namespace MovieTimes.Db.Migrations
                 name: "MovieShowings");
 
             migrationBuilder.DropTable(
-                name: "Movies");
+                name: "Cinemas");
 
             migrationBuilder.DropTable(
-                name: "MovieTheaters");
+                name: "Movies");
         }
     }
 }
